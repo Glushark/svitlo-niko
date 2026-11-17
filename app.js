@@ -6,6 +6,7 @@
     times: 'https://off.energy.mk.ua/api/schedule/time-series',
     queues: 'https://off.energy.mk.ua/api/outage-queue/by-type/3'
   };
+  const DEFAULT_PROXY_URL = 'https://wandering-shadow-0be2.zenkasanya.workers.dev';
   const STORAGE_KEY = 'power-outage-mobile-v1';
   const REFRESH_MS = 60_000;
   const FALLBACK_QUEUES = ['1.1','1.2','2.1','2.2','3.1','3.2','4.1','4.2','5.1','5.2','6.1','6.2'];
@@ -15,7 +16,7 @@
     next: $('nextText'), freshness: $('freshness'), date: $('currentDate'), time: $('currentTime'),
     scheduleDate: $('scheduleDate'), list: $('scheduleList'), note: $('scheduleNote'), refresh: $('refreshButton'), toast: $('toast')
   };
-  const state = { queueName: '2.2', queueId: 17, queues: [], slots: [], updatedAt: null, refreshing: false, theme: 'system', lastError: '', proxyUrl: '' };
+  const state = { queueName: '2.2', queueId: 17, queues: [], slots: [], updatedAt: null, refreshing: false, theme: 'system', lastError: '', proxyUrl: DEFAULT_PROXY_URL };
 
   function readSaved() {
     try {
@@ -23,7 +24,7 @@
       if (typeof saved.queueName === 'string') state.queueName = saved.queueName;
       if (Number.isFinite(saved.queueId)) state.queueId = saved.queueId;
       if (['system','light','dark'].includes(saved.theme)) state.theme = saved.theme;
-      if (typeof saved.proxyUrl === 'string') state.proxyUrl = saved.proxyUrl;
+      if (typeof saved.proxyUrl === 'string' && saved.proxyUrl.trim()) state.proxyUrl = saved.proxyUrl.trim();
       if (Array.isArray(saved.slots) && saved.slots.length) state.slots = saved.slots;
       if (saved.updatedAt) state.updatedAt = saved.updatedAt;
       if (Array.isArray(saved.queues)) state.queues = saved.queues;
@@ -308,7 +309,7 @@
   $('saveProxyButton').addEventListener('click', () => {
     const value = $('proxyUrlInput').value.trim().replace(/\/$/, '');
     if (value && !/^https:\/\//i.test(value)) { showToast('Адрес прокси должен начинаться с https://'); return; }
-    state.proxyUrl = value; state.lastError = ''; save(); showToast(value ? 'Адрес сохранён, проверяю подключение…' : 'Прокси отключён, проверяю прямое подключение…'); refresh();
+    state.proxyUrl = value || DEFAULT_PROXY_URL; $('proxyUrlInput').value = state.proxyUrl; state.lastError = ''; save(); showToast('Адрес сохранён, проверяю подключение…'); refresh();
   });
   els.select.addEventListener('change', () => {
     state.queueName = els.select.value;
