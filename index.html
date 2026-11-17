@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10131c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Свет Нико">
+  <title>Статус света · Николаев</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">✦</div>
+      <div class="brand-copy"><span class="eyebrow">НИКОЛАЕВ · ГРАФИК ОТКЛЮЧЕНИЙ</span><h1>Статус света</h1></div>
+      <button id="refreshButton" class="icon-button" aria-label="Обновить график" title="Обновить">↻</button>
+    </header>
+
+    <section class="queue-card panel" aria-label="Выбор очереди">
+      <div><span class="eyebrow">МОЯ ОЧЕРЕДЬ</span><p class="queue-help">Выберите свою группу</p></div>
+      <label class="select-wrap"><span class="sr-only">Очередь</span><select id="queueSelect" aria-label="Выбрать очередь"><option value="2.2">Очередь 2.2</option></select><span class="select-chevron">⌄</span></label>
+    </section>
+
+    <section class="status-card panel" aria-live="polite">
+      <div class="status-topline"><span id="statusPill" class="status-pill"><i></i><span id="statusShort">ЗАГРУЗКА</span></span><span id="liveBadge" class="live-badge"><i></i> LIVE</span></div>
+      <div class="status-orb" id="statusOrb" data-status="green" aria-hidden="true"><span class="orb-core"></span><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit orbit-three"></span></div>
+      <p id="statusText" class="status-text">Загружаю график…</p>
+      <div class="now-line"><span id="currentDate">—</span><b></b><span id="currentTime">—</span></div>
+      <div class="next-box"><span class="eyebrow">ДАЛЬШЕ ПО ГРАФИКУ</span><strong id="nextText">Получаю данные…</strong></div>
+      <div id="freshness" class="freshness">Подключение к API…</div>
+    </section>
+
+    <section class="schedule-card panel">
+      <div class="section-heading"><div><span class="eyebrow">ПОЛНЫЙ ГРАФИК</span><h2>Сегодня</h2></div><span id="scheduleDate" class="date-chip">—</span></div>
+      <div id="scheduleList" class="schedule-list" aria-live="polite"><div class="loading-row">Загружаю интервалы…</div></div>
+      <p id="scheduleNote" class="schedule-note"></p>
+    </section>
+
+    <section class="settings-card panel">
+      <div><span class="eyebrow">ОФОРМЛЕНИЕ</span><h2>Тема приложения</h2></div>
+      <div class="theme-switch" role="group" aria-label="Тема приложения">
+        <button data-theme-choice="system" class="theme-choice is-active">Система</button>
+        <button data-theme-choice="light" class="theme-choice">Светлая</button>
+        <button data-theme-choice="dark" class="theme-choice">Тёмная</button>
+      </div>
+    </section>
+    <footer><span>Данные: off.energy.mk.ua</span><span id="footerUpdated">Автообновление · 1 мин</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
