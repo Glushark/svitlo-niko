@@ -15,7 +15,7 @@
     next: $('nextText'), freshness: $('freshness'), date: $('currentDate'), time: $('currentTime'),
     scheduleDate: $('scheduleDate'), list: $('scheduleList'), note: $('scheduleNote'), refresh: $('refreshButton'), toast: $('toast')
   };
-  const state = { queueName: '2.2', queueId: 17, queues: [], slots: [], updatedAt: null, refreshing: false, theme: 'system', lastError: '' };
+  const state = { queueName: '2.2', queueId: 17, queues: [], slots: [], updatedAt: null, refreshing: false, theme: 'system', lastError: '', proxyUrl: '' };
 
   function readSaved() {
     try {
@@ -23,6 +23,7 @@
       if (typeof saved.queueName === 'string') state.queueName = saved.queueName;
       if (Number.isFinite(saved.queueId)) state.queueId = saved.queueId;
       if (['system','light','dark'].includes(saved.theme)) state.theme = saved.theme;
+      if (typeof saved.proxyUrl === 'string') state.proxyUrl = saved.proxyUrl;
       if (Array.isArray(saved.slots) && saved.slots.length) state.slots = saved.slots;
       if (saved.updatedAt) state.updatedAt = saved.updatedAt;
       if (Array.isArray(saved.queues)) state.queues = saved.queues;
@@ -32,7 +33,7 @@
   function save() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        queueName: state.queueName, queueId: state.queueId, theme: state.theme,
+        queueName: state.queueName, queueId: state.queueId, theme: state.theme, proxyUrl: state.proxyUrl,
         slots: state.slots, updatedAt: state.updatedAt, queues: state.queues
       }));
     } catch { /* Storage may be unavailable in private browsing. */ }
@@ -61,6 +62,13 @@
       if (!response.ok) throw new Error(`HTTP ${response.status} при чтении расписания`);
       return await response.json();
     } finally { clearTimeout(timeout); }
+  }
+
+  function apiUrl(resource) {
+    if (!state.proxyUrl) return API[resource];
+    const url = new URL(state.proxyUrl);
+    url.searchParams.set('resource', resource);
+    return url.href;
   }
 
   function parseClock(value) {
@@ -224,6 +232,9 @@
     els.time.textContent = new Intl.DateTimeFormat('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' }).format(now);
     els.scheduleDate.textContent = new Intl.DateTimeFormat('ru-RU', { day:'numeric', month:'long' }).format(now);
     if (!state.slots.length) {
+      applyStatusColor(state.lastError ? 'red' : 'green');
+      $('liveText').textContent = state.lastError ? 'НЕТ СВЯЗИ' : 'ЗАГРУЗКА';
+      $('liveBadge').classList.toggle('offline', Boolean(state.lastError));
       els.statusShort.textContent = state.lastError ? 'НЕТ СВЯЗИ' : 'ЗАГРУЗКА';
       els.statusText.textContent = state.lastError ? 'Не удалось обновить' : 'Загружаю график…';
       els.next.textContent = state.lastError ? 'Проверьте подключение к интернету и доступность API.' : 'Получаю данные…';
@@ -241,6 +252,8 @@
     applyStatusColor(color);
     const updated = state.updatedAt ? new Date(state.updatedAt) : null;
     const stale = !updated || (Date.now() - updated.getTime() > REFRESH_MS * 2);
+    $('liveText').textContent = state.lastError || stale ? 'НЕТ СВЯЗИ' : 'LIVE';
+    $('liveBadge').classList.toggle('offline', Boolean(state.lastError || stale));
     if (state.lastError) {
       els.freshness.textContent = `Не обновлено · последние данные ${updated ? `от ${new Intl.DateTimeFormat('ru-RU',{hour:'2-digit',minute:'2-digit'}).format(updated)}` : 'недоступны'}`;
       els.freshness.className = 'freshness offline';
@@ -263,7 +276,7 @@
     els.refresh.classList.add('spinning'); els.refresh.disabled = true;
     els.freshness.textContent = 'Обновляю данные…'; els.freshness.className = 'freshness';
     try {
-      const [timesPayload, activePayload, queuesPayload] = await Promise.all([getJson(API.times), getJson(API.active), getJson(API.queues)]);
+      const [timesPayload, activePayload, queuesPayload] = await Promise.all([getJson(apiUrl('times')), getJson(apiUrl('active')), getJson(apiUrl('queues'))]);
       const queues = normalizeQueues(queuesPayload);
       if (queues.length) state.queues = queues;
       const chosen = state.queues.find((q) => q.name === state.queueName);
@@ -291,6 +304,12 @@
   }
 
   els.refresh.addEventListener('click', refresh);
+  $('proxyUrlInput').value = state.proxyUrl;
+  $('saveProxyButton').addEventListener('click', () => {
+    const value = $('proxyUrlInput').value.trim().replace(/\/$/, '');
+    if (value && !/^https:\/\//i.test(value)) { showToast('Адрес прокси должен начинаться с https://'); return; }
+    state.proxyUrl = value; state.lastError = ''; save(); showToast(value ? 'Адрес сохранён, проверяю подключение…' : 'Прокси отключён, проверяю прямое подключение…'); refresh();
+  });
   els.select.addEventListener('change', () => {
     state.queueName = els.select.value;
     const queue = state.queues.find((q) => q.name === state.queueName);
@@ -300,6 +319,7 @@
   document.querySelectorAll('[data-theme-choice]').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.themeChoice)));
 
   readSaved();
+  $('proxyUrlInput').value = state.proxyUrl;
   setTheme(state.theme);
   renderQueues();
   render();

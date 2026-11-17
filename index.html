@@ -27,11 +27,11 @@
     </section>
 
     <section class="status-card panel" aria-live="polite">
-      <div class="status-topline"><span id="statusPill" class="status-pill"><i></i><span id="statusShort">ЗАГРУЗКА</span></span><span id="liveBadge" class="live-badge"><i></i> LIVE</span></div>
+      <div class="status-topline"><span id="statusPill" class="status-pill"><i></i><span id="statusShort">ЗАГРУЗКА</span></span><span id="liveBadge" class="live-badge"><i></i><span id="liveText">LIVE</span></span></div>
       <div class="status-orb" id="statusOrb" data-status="green" aria-hidden="true"><span class="orb-core"></span><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit orbit-three"></span></div>
       <p id="statusText" class="status-text">Загружаю график…</p>
       <div class="now-line"><span id="currentDate">—</span><b></b><span id="currentTime">—</span></div>
-      <div class="next-box"><span class="eyebrow">ДАЛЬШЕ ПО ГРАФИКУ</span><strong id="nextText">Получаю данные…</strong></div>
+      <div class="next-box"><span class="eyebrow">БЛИЖАЙШЕЕ ИЗМЕНЕНИЕ</span><strong id="nextText">Получаю данные…</strong></div>
       <div id="freshness" class="freshness">Подключение к API…</div>
     </section>
 
@@ -48,6 +48,15 @@
         <button data-theme-choice="light" class="theme-choice">Светлая</button>
         <button data-theme-choice="dark" class="theme-choice">Тёмная</button>
       </div>
+    </section>
+    <section class="source-card panel">
+      <details>
+        <summary>Не загружается график?</summary>
+        <p>GitHub Pages не может напрямую читать API сайта из-за ограничений браузера. Создай прокси Worker по инструкции в архиве и вставь его адрес сюда.</p>
+        <label class="source-label" for="proxyUrlInput">Адрес прокси</label>
+        <div class="source-row"><input id="proxyUrlInput" type="url" inputmode="url" placeholder="https://имя.аккаунт.workers.dev" autocomplete="url"><button id="saveProxyButton" type="button">Сохранить</button></div>
+        <small>Адрес сохраняется только в этом браузере.</small>
+      </details>
     </section>
     <footer><span>Данные: off.energy.mk.ua</span><span id="footerUpdated">Автообновление · 1 мин</span></footer>
   </main>
