@@ -1,4 +1,4 @@
-const CACHE_NAME = 'svitlo-niko-shell-v3';
+const CACHE_NAME = 'svitlo-niko-shell-v4';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
