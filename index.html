@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-theme="system">
+<html lang="ru" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -28,7 +28,7 @@
 
     <section class="status-card panel" aria-live="polite">
       <div class="status-topline"><span id="statusPill" class="status-pill"><i></i><span id="statusShort">ЗАГРУЗКА</span></span><span id="liveBadge" class="live-badge"><i></i><span id="liveText">LIVE</span></span></div>
-      <div class="status-orb" id="statusOrb" data-status="green" aria-hidden="true"><span class="orb-core"></span><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit orbit-three"></span></div>
+      <div class="status-orb" id="statusOrb" data-status="green" aria-hidden="true"><img id="statusIndicator" src="assets/indicators/sun.gif" alt=""></div>
       <p id="statusText" class="status-text">Загружаю график…</p>
       <div class="now-line"><span id="currentDate">—</span><b></b><span id="currentTime">—</span></div>
       <div class="next-box"><span class="eyebrow">БЛИЖАЙШЕЕ ИЗМЕНЕНИЕ</span><strong id="nextText">Получаю данные…</strong></div>
@@ -41,14 +41,6 @@
       <p id="scheduleNote" class="schedule-note"></p>
     </section>
 
-    <section class="settings-card panel">
-      <div><span class="eyebrow">ОФОРМЛЕНИЕ</span><h2>Тема приложения</h2></div>
-      <div class="theme-switch" role="group" aria-label="Тема приложения">
-        <button data-theme-choice="system" class="theme-choice is-active">Система</button>
-        <button data-theme-choice="light" class="theme-choice">Светлая</button>
-        <button data-theme-choice="dark" class="theme-choice">Тёмная</button>
-      </div>
-    </section>
     <section class="source-card panel">
       <details>
         <summary>Настройка подключения API</summary>

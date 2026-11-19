@@ -12,18 +12,17 @@
   const FALLBACK_QUEUES = ['1.1','1.2','2.1','2.2','3.1','3.2','4.1','4.2','5.1','5.2','6.1','6.2'];
   const $ = (id) => document.getElementById(id);
   const els = {
-    select: $('queueSelect'), statusShort: $('statusShort'), statusText: $('statusText'), orb: $('statusOrb'),
+    select: $('queueSelect'), statusShort: $('statusShort'), statusText: $('statusText'), orb: $('statusOrb'), indicator: $('statusIndicator'),
     next: $('nextText'), freshness: $('freshness'), date: $('currentDate'), time: $('currentTime'),
     scheduleDate: $('scheduleDate'), list: $('scheduleList'), note: $('scheduleNote'), refresh: $('refreshButton'), toast: $('toast')
   };
-  const state = { queueName: '2.2', queueId: 17, queues: [], slots: [], updatedAt: null, refreshing: false, theme: 'system', lastError: '', proxyUrl: DEFAULT_PROXY_URL };
+  const state = { queueName: '2.2', queueId: 17, queues: [], slots: [], updatedAt: null, refreshing: false, lastError: '', proxyUrl: DEFAULT_PROXY_URL };
 
   function readSaved() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
       if (typeof saved.queueName === 'string') state.queueName = saved.queueName;
       if (Number.isFinite(saved.queueId)) state.queueId = saved.queueId;
-      if (['system','light','dark'].includes(saved.theme)) state.theme = saved.theme;
       if (typeof saved.proxyUrl === 'string' && saved.proxyUrl.trim()) state.proxyUrl = saved.proxyUrl.trim();
       if (Array.isArray(saved.slots) && saved.slots.length) state.slots = saved.slots;
       if (saved.updatedAt) state.updatedAt = saved.updatedAt;
@@ -34,7 +33,7 @@
   function save() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        queueName: state.queueName, queueId: state.queueId, theme: state.theme, proxyUrl: state.proxyUrl,
+        queueName: state.queueName, queueId: state.queueId, proxyUrl: state.proxyUrl,
         slots: state.slots, updatedAt: state.updatedAt, queues: state.queues
       }));
     } catch { /* Storage may be unavailable in private browsing. */ }
@@ -192,6 +191,9 @@
     document.documentElement.style.setProperty('--status-rgb', rgb);
     document.documentElement.style.setProperty('--status', hex);
     els.orb.dataset.status = groupName;
+    const indicator = { green: 'sun.gif', yellow: 'sun-moon.gif', red: 'moon.gif' }[groupName] || 'sun.gif';
+    const src = `assets/indicators/${indicator}`;
+    if (els.indicator.getAttribute('src') !== src) els.indicator.setAttribute('src', src);
   }
 
   function renderQueues() {
@@ -297,13 +299,6 @@
     }
   }
 
-  function setTheme(theme) {
-    state.theme = theme;
-    document.documentElement.dataset.theme = theme;
-    document.querySelectorAll('[data-theme-choice]').forEach((button) => button.classList.toggle('is-active', button.dataset.themeChoice === theme));
-    save();
-  }
-
   els.refresh.addEventListener('click', refresh);
   $('proxyUrlInput').value = state.proxyUrl;
   $('saveProxyButton').addEventListener('click', () => {
@@ -317,11 +312,9 @@
     state.queueId = queue ? queue.id : (state.queueName === '2.2' ? 17 : NaN);
     save(); refresh();
   });
-  document.querySelectorAll('[data-theme-choice]').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.themeChoice)));
-
   readSaved();
   $('proxyUrlInput').value = state.proxyUrl;
-  setTheme(state.theme);
+  document.documentElement.dataset.theme = 'dark';
   renderQueues();
   render();
   setInterval(render, 1000);
