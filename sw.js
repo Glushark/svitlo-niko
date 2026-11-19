@@ -1,5 +1,5 @@
-const CACHE_NAME = 'svitlo-niko-shell-v4';
-const SHELL = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png'];
+const CACHE_NAME = 'svitlo-niko-shell-v5';
+const SHELL = ['./', './index.html', './styles.css', './app.js', './queue-picker.js', './space-background.js', './assets/space-background.mp4', './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
